@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mohrey — Wholesale Catalogue</title>
+  <meta name="description" content="Mohrey Clothing Studio — wholesale textile catalogue. Browse the latest designs and place bulk orders directly.">
+  <meta name="theme-color" content="#5b1a21">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="announce">
+    <span>Wholesale only</span><span class="dot">✦</span>
+    <span>Min. order <b id="minOrder"></b></span><span class="dot">✦</span>
+    <span>Catalogue updated <b id="updatedAt"></b></span>
+  </div>
+
+  <header class="header">
+    <a class="brand" href="#" aria-label="Mohrey home">
+      <span class="monogram">M</span>
+      <span class="wordmark">MOHREY<span class="comma">,</span></span>
+    </a>
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="Search design no. (e.g. 2417) or fabric" autocomplete="off">
+    </label>
+    <nav class="header-actions">
+      <button class="btn-ghost" data-open="quick">Order by design no.</button>
+      <button class="bag-btn" data-open="bag" aria-label="Open order sheet">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <span>Order sheet</span>
+        <span class="bag-count" id="bagCount">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Clothing Studio · Wholesale</p>
+      <h1>Crafted to Endure</h1>
+      <div class="ornament"><span></span>✦<span></span></div>
+      <p class="hero-sub">Rooted in tradition, made for tomorrow. Pick designs, choose how many sets, and place your order — no more scrolling through WhatsApp.</p>
+      <div class="hero-stats">
+        <div><b id="statNew">0</b><span>new this week</span></div>
+        <div><b id="statLive">0</b><span>designs in stock</span></div>
+        <div><b>24h</b><span>dispatch</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="catalogue" id="catalogue">
+    <div class="toolbar">
+      <div class="chips" id="chips" role="tablist"></div>
+      <div class="filters">
+        <select id="fabric" aria-label="Fabric"><option value="">All fabrics</option></select>
+        <select id="sort" aria-label="Sort">
+          <option value="new">Newest first</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+          <option value="code">Design no.</option>
+        </select>
+        <label class="toggle"><input type="checkbox" id="inStock"><span>In stock only</span></label>
+      </div>
+    </div>
+    <p class="result-count" id="resultCount"></p>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden>
+      <p>No designs match that search.</p>
+      <button class="btn-ghost" id="clearFilters">Clear filters</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span class="monogram small">M</span>
+    <p class="footer-line">Heritage in every thread. Purpose in every piece.</p>
+    <p class="footer-meta">Questions? <a id="waLink" href="#" target="_blank" rel="noopener">Chat with us on WhatsApp</a></p>
+  </footer>
+
+  <!-- Mobile bottom bar -->
+  <nav class="tabbar">
+    <a href="#catalogue"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>Catalogue</a>
+    <button data-open="quick"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Quick order</button>
+    <button data-open="bag"><svg viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Order sheet <span class="bag-count" id="bagCountMobile">0</span></button>
+  </nav>
+
+  <!-- Product detail -->
+  <dialog class="modal" id="productModal">
+    <div class="modal-body product-detail" id="productDetail"></div>
+  </dialog>
+
+  <!-- Quick order by design number -->
+  <dialog class="modal" id="quickModal">
+    <div class="modal-body">
+      <button class="close" data-close aria-label="Close">×</button>
+      <p class="eyebrow">Quick order</p>
+      <h2>Order by design no.</h2>
+      <p class="muted">Already know what you want? Type one design per line — same way you'd send it on WhatsApp.</p>
+      <textarea id="quickText" rows="6" placeholder="2417 x 3&#10;3120 x 2&#10;MH-6010 x 4"></textarea>
+      <div class="quick-preview" id="quickPreview"></div>
+      <button class="btn-primary block" id="quickAdd" disabled>Add to order sheet</button>
+    </div>
+  </dialog>
+
+  <!-- Order sheet drawer -->
+  <aside class="drawer" id="bag" aria-hidden="true">
+    <div class="drawer-scrim" data-close-bag></div>
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow">Your order sheet</p>
+          <h2 id="drawerTitle">Review order</h2>
+        </div>
+        <button class="close" data-close-bag aria-label="Close">×</button>
+      </div>
+
+      <div class="drawer-step" id="stepBag">
+        <div class="bag-lines" id="bagLines"></div>
+        <div class="bag-empty" id="bagEmpty">
+          <span class="monogram">M</span>
+          <p>Your order sheet is empty.</p>
+          <p class="muted">Add sets from the catalogue or use <b>Order by design no.</b></p>
+        </div>
+        <div class="bag-foot" id="bagFoot">
+          <div class="moq">
+            <div class="moq-bar"><span id="moqFill"></span></div>
+            <p id="moqText"></p>
+          </div>
+          <div class="totals">
+            <div><span>Sets</span><b id="totSets">0</b></div>
+            <div><span>Pieces / metres</span><b id="totPcs">0</b></div>
+            <div class="grand"><span>Order value</span><b id="totValue">₹0</b></div>
+            <p class="muted small">GST & freight added on invoice.</p>
+          </div>
+          <button class="btn-primary block" id="toCheckout">Continue</button>
+        </div>
+      </div>
+
+      <form class="drawer-step" id="stepDetails" hidden>
+        <label>Shop / business name<input name="shop" required placeholder="e.g. Lakshmi Textiles"></label>
+        <label>Your name<input name="name" required></label>
+        <label>WhatsApp number<input name="phone" required inputmode="tel" pattern="[0-9+ ]{10,15}" placeholder="10-digit mobile"></label>
+        <div class="row2">
+          <label>City<input name="city" required></label>
+          <label>GSTIN <span class="muted">(optional)</span><input name="gst"></label>
+        </div>
+        <label>Note for us <span class="muted">(optional)</span><textarea name="note" rows="2" placeholder="Colour preferences, transport, etc."></textarea></label>
+        <div class="summary-line"><span id="summarySets"></span><b id="summaryValue"></b></div>
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="backToBag">Back</button>
+          <button type="submit" class="btn-primary">Place order</button>
+        </div>
+      </form>
+
+      <div class="drawer-step done" id="stepDone" hidden>
+        <div class="seal">✓</div>
+        <h3>Order received</h3>
+        <p>Order no. <b id="orderNo"></b></p>
+        <p class="muted">We'll confirm stock and share the invoice on WhatsApp shortly.</p>
+        <a class="btn-wa block" id="sendWa" target="_blank" rel="noopener">Also send on WhatsApp</a>
+        <button class="btn-ghost block" id="newOrder">Start a new order</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="data/products.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
